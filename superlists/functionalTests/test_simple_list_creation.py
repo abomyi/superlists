@@ -18,7 +18,7 @@ class NewVisitorTest(FunctionalTest):
 
 
         # 網站邀請她輸入一個待辦事項
-        inputBox = self.browser.find_element_by_id('newItem')
+        inputBox = self.get_item_input_box()
         self.assertEqual(
             inputBox.get_attribute('placeholder'),
             '輸入一個待辦事項'
@@ -35,7 +35,7 @@ class NewVisitorTest(FunctionalTest):
         
         # 頁面另外還有一個文字框，邀請她再加入其他項目，她輸入了「利用孔雀羽毛來做一個路亞」
         # (彤彤做事很講究章法的)
-        inputBox = self.browser.find_element_by_id('newItem')
+        inputBox = self.get_item_input_box()
         inputBox.send_keys('利用孔雀羽毛來做一個路亞')
         inputBox.send_keys(Keys.ENTER)
         
@@ -55,7 +55,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertNotIn('利用孔雀羽毛來做一個路亞', pageText)
         
         # 翔翔建立一個新的清單以及一個新的項目，他不像彤彤一樣那麼有趣
-        inputBox = self.browser.find_element_by_id('newItem')
+        inputBox = self.get_item_input_box()
         inputBox.send_keys('買鮮奶')
         inputBox.send_keys(Keys.ENTER)
 
