@@ -1,9 +1,12 @@
-from django.test import TestCase
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import resolve, reverse
-from lists.views import homePage
-from lists.models import Item, List
+from django.test import TestCase
+from django.utils.html import escape
 
- 
+from lists.forms import ItemForm, EMPTY_ITEM_ERROR
+from lists.models import Item, List
+from lists.views import homePage
+
 
 class HomePageTest(TestCase):
     def test_root_url_resolves_to_homePage_view(self):
@@ -16,7 +19,12 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         #檢查頁面用的是否是該html檔
         self.assertTemplateUsed(response, 'lists/home.html')
-            
+    
+    
+    def test_homePage_uses_item_form(self):
+        response = self.client.get('/')
+        self.assertIsInstance(response.context['form'], ItemForm)
+        
         
 class ListAndItemModelTest(TestCase):
     def test_saving_and_retrieving_items(self):
@@ -45,7 +53,15 @@ class ListAndItemModelTest(TestCase):
         self.assertEqual(firstSavedItem.list, list_)
         self.assertEqual(secondSavedItem.text, '第二個清單項目')
         self.assertEqual(secondSavedItem.list, list_)
-   
+    
+    
+    def test_cannot_save_empty_list_items(self):
+        list_ = List.objects.create()
+        item = Item(list=list_, text='')
+        with self.assertRaises(ValidationError):
+            item.full_clean()
+            item.save()
+            
     
 class ListViewTest(TestCase):
     def test_use_list_template(self):
@@ -93,20 +109,52 @@ class ListViewTest(TestCase):
         self.assertRedirects(response, reverse('lists:viewList', args=(correctList.id, )))
         
 
+    def test_validation_errors_end_up_on_lists_page(self):
+        list_ = List.objects.create()
+        response = self.client.post(
+            reverse('lists:viewList', args=(list_.id, )),
+            data={'itemText':''}
+        )
+        self.assertEqual(Item.objects.count(), 0)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/list.html')
+        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertContains(response, EMPTY_ITEM_ERROR)
+        
+        
+    def test_displays_item_form(self):
+        list_ = List.objects.create()
+        response = self.client.get(reverse('lists:viewList', args=(list_.id, )))
+        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertContains(response, 'name="text"')
+        
+        
 class NewListTest(TestCase):
     def test_saving_a_POST_request(self):
-        self.client.post(reverse('lists:newList'), data={'itemText':'新的項目'})
+        self.client.post(reverse('lists:newList'), data={'text':'新的項目'})
         self.assertEqual(Item.objects.count(), 1)
         newItem = Item.objects.first()
         self.assertEqual(newItem.text, '新的項目')
 
 
     def test_redirect_after_POST(self):
-        response = self.client.post(reverse('lists:newList'), data={'itemText':'新的項目'})
+        response = self.client.post(reverse('lists:newList'), data={'text':'新的項目'})
         newList = List.objects.first()
         self.assertRedirects(response, reverse('lists:viewList', args=(newList.id, )))
         
         
+    def test_validation_errors_are_sent_back_to_home_page_tempalte(self):
+        response = self.client.post(reverse('lists:newList'), data={'text':''})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/home.html')
+        self.assertContains(response, EMPTY_ITEM_ERROR)    
+        self.assertIsInstance(response.context['form'], ItemForm)
+        
+    
+    def test_invalid_list_item_arent_saved(self):
+        self.client.post(reverse('lists:newList'), data={'text':''})
+        self.assertEqual(List.objects.count(), 0)
+        self.assertEqual(Item.objects.count(), 0)
         
         
-           
+        
