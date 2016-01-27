@@ -49,7 +49,5 @@ class ExistingListItemForm(ItemForm):
         #這裡用原ModeForm的save(), 因為繼承的ItemForm裡面save()需要forList參數,
         #但在這個form裡面, __init__老早就已經給了forList參數
         return forms.ModelForm.save(self)
-    
-    
-    
+       
     

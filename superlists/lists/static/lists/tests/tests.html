@@ -3,11 +3,12 @@
 <head>
 <title>JavaScript tests</title>
 <meta charset=utf-8>
-<link rel=stylesheet href=qunit.css>
+<link rel=stylesheet href=qunit-1.20.0.css>
 </head>
 <body>
 <div id=qunit></div>
 <div id=qunit-fixture>
+<!-- qunit-fixture 是當測試完一個test後會還原, 以便進行下個test -->
 <form>
   <input name=text>
   <div class=has-error>Error text</div>
@@ -15,7 +16,7 @@
 </div>
 
 <script src=http://code.jquery.com/jquery.min.js></script>
-<script src=qunit.js></script>
+<script src=qunit-1.20.0.js></script>
 <script src=../js/lists.js></script>
 <script>
 /* global $, test, equal */
@@ -26,7 +27,6 @@ test('errors should be hidden on keypress', function() {
 
 test('errors not be hidden unless there is a keypress', function() {
   equal($('.has-error').is(':visible'), true);
-});('.has-error').is(':visible'), false);
 });
 </script>
 </body>
