@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<title>拜訪紀錄單</title>
+<meta charset=utf-8>
+</head>
+<body>
+<h1>朝陽科技大學資訊學院</h1>
+<h2>【朝陽MIT資訊創新服務計畫】</h2>
+<h2>拜訪單</h2>
+
+{% for field in visitForm %}
+  <p>{{field.label}}:{{field}}
+    {{field.errors}}
+  </p>
+{% endfor %}
+
+</body>
+</html>

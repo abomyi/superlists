@@ -8,8 +8,19 @@
 <h1>朝陽科技大學資訊學院</h1>
 <h2>【朝陽MIT資訊創新服務計畫】</h2>
 <h2>拜訪單</h2>
-{% for field in visitForm %}
-  <p>{{field.label}}:{{field}}</p>
-{% endfor %}
+
+<table>
+  <tr>
+    <th>拜訪機構</th><th>拜訪日期</th><th>摘要</th>
+  </tr>
+  {% for visit in visits %}
+  <tr>
+    <td><a href="{% url 'visits:getVisit' visit.id %}">{{visit.company}}</a></td>
+    <td>{{visit.visitDate}}</td>
+    <td>{{visit.outline}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
 </body>
 </html>
