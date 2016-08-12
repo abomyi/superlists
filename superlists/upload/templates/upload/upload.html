@@ -1,0 +1,13 @@
+{% extends "lists/base.html" %}
+
+{% block content %}
+<form method=post action="{% url 'upload:upload' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type=file name=file>
+  <input type=submit value=送出>
+</form>
+
+{% if url %}
+<a href="{{url}}">link</a>
+{% endif %}
+{% endblock %}

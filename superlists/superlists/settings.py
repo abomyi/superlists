@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'lists',
     'visits',
+    'upload',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -127,3 +128,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '../static'))
+
+
+# For Google Cloud Storage
+GS_ACCESS_KEY = 'XXXXXXXXXXXXXX'
+GS_SECRET_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXX'
+GS_BUCKET_NAME = 'XXX'
