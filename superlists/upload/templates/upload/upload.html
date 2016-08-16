@@ -1,13 +1,62 @@
 {% extends "lists/base.html" %}
+{% load staticfiles %}
 
 {% block content %}
-<form method=post action="{% url 'upload:upload' %}" enctype="multipart/form-data">
+<form id=form method=post action="{% url 'upload:upload' %}" enctype="multipart/form-data">
   {% csrf_token %}
-  <input type=file name=file>
-  <input type=submit value=送出>
+  <input id=file type=file name=file><br>
+  <input id=fileURL type=text name=fileURL placeholder=這欄是給js塞值用的 readonly><br><br>
+  <input id=fileUpload type=button value=送出>
 </form>
+{% if fileURL %}
+<a href={{fileURL}}>檔案</a>
+{% endif %}
 
 {% if url %}
 <a href="{{url}}">link</a>
 {% endif %}
+
+<!-- 
+<form action="http://doccontrol.storage.googleapis.com" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="key" value="ogEvcrJ1_ABt6WT1An7EtUq1">
+  <input type="hidden" name="bucket" value="doccontrol">
+  <input type="hidden" name="Content-Type" value="image/jpeg">
+  <input type="hidden" name="GoogleAccessId" value="656853139335-r14gbojh1g2p0ghseal9ifeo5lum0qst.apps.googleusercontent.com">
+  <input type="hidden" name="acl" value="bucket-owner-read">
+  <input type="hidden" name="success_action_redirect" value="http://www.example.com/success_notification.html">
+  <input type="hidden" name="policy" value="eyJleHBpcmF0aW9uIjogIjIwMTAtMDYtMTZUMTE6MTE6MTFaIiwNCiAiY29uZGl0aW9ucyI6IFsNCiAgWyJzdGFydHMtd2l0aCIsICJrZXkiLCAiIiBdLA0KICB7ImFjbCI6ICJidWNrZXQtb3duZXItcmVhZCIgfSwNCiAgeyJidWNrZXQiOiAidHJhdmVsLW1hcHMifSwNCiAgeyJzdWNjZXNzX2FjdGlvbl9yZWRpcmVjdCI6ICJodHRwOi8vd3d3LmV4YW1wbGUuY29tL3N1Y2Nlc3Nfbm90aWZpY2F0aW9uLmh0bWwiIH0sDQogIFsiZXEiLCAiQ29udGVudC1UeXBlIiwgImltYWdlL2pwZWciIF0sDQogIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAxMDAwMDAwXQ0KICBdDQp9">
+  <input type="hidden" name="signature" value="BSAMPLEaASAMPLE6SAMPLE+SAMPPLEqSAMPLEPSAMPLE+SAMPLEgSAMPLEzCPlgWREeF7oPGowkeKk7J4WApzkzxERdOQmAdrvshKSzUHg8Jqp1lw9tbiJfE2ExdOOIoJVmGLoDeAGnfzCd4fTsWcLbal9sFpqXsQI8IQi1493mw=">
+  
+  <input name="file" type="file">
+  <input type="submit" value="Upload">
+</form>
+ -->
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'upload/js/s3upload.js' %}"></script>
+<script src="https://apis.google.com/js/api.js"></script>
+
+<script>
+var apiKey = 'ogEvcrJ1_ABt6WT1An7EtUq1';
+var clientId = '656853139335-r14gbojh1g2p0ghseal9ifeo5lum0qst.apps.googleusercontent.com';
+var scopes = 'profile';
+
+$(document).on('click', '#fileUpload', function(){
+  form = $('#form');
+  fields = form.find("input[name^='file']");
+    
+  var fileName = $('#file').val();
+  if(fileName){
+    fileName = fileName.split('\\'); 
+    var filePath = 'docControlTest/' + fileName[fileName.length-1];
+    uploadToS3(filePath, 'file', '/upload/signS3/', function(){
+      $('#fileURL').attr({'value':'https://isccyut2.s3.amazonaws.com/'+filePath});
+      $('#form').submit();
+    });
+  }
+});
+</script>
+
+
 {% endblock %}
