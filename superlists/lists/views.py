@@ -8,6 +8,7 @@ from lists.models import Item, List
 
 
 def homePage(request):
+    print("測試merge衝突")
     return render(request, 'lists/home.html', {'form':ItemForm()})
 
 
